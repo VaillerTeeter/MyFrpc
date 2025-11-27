@@ -1,0 +1,149 @@
+# =========================================
+# FRP 客户端核心配置 (frpc.toml)
+# =========================================
+
+# 基础服务配置
+# ----------------------------------------
+# 用户名, 设置此参数后, 代理名称会被修改为 {user}.{proxyName}, 避免代理名称和其他用户冲突
+user = "Vaciller_MAC_Mini_M4"
+# 服务器 IP 地址
+serverAddr = "xxx.xxx.xxx.xxx"
+# 服务器的端口
+serverPort = 7000
+# 第一次登陆失败后是否退出
+loginFailExit = true
+
+# 虚拟网络配置（Alpha 特性）
+# ----------------------------------------
+# 虚拟网络接口的 IP 地址和网段，格式为 CIDR (例如 “100.86.0.1/24”)，启用后可通过 VPN 方式访问内网资源
+# virtualNet.address = ""
+
+# 元数据配置
+# ----------------------------------------
+# 附加元数据, 会传递给服务端插件, 提供附加能力
+# metadatas = map[string]string
+# 示例：metadatas.application = "frpc"
+# 示例：metadatas.environment = "production"
+
+# 附加配置文件
+# ----------------------------------------
+# 指定额外的配置文件目录, 其中的 proxy 和 visitor 配置会被读取加载
+# includes = ["/etc/frp/conf.d/*.toml"]
+
+# 安全与鉴权配置
+# ----------------------------------------
+# 鉴权方式, token / oidc
+auth.method = "token"
+# token
+auth.token = "1234"
+# 鉴权信息附加范围
+# HeartBeats:   心跳
+# NewWorkConns: 新工作连接
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+
+# 日志配置
+# ----------------------------------------
+# 日志输出文件路径, 如果为 console, 则会将日志打印在标准输出中
+log.to = "/etc/frp/log/frpc.log"
+# 日志级别, trace / debug / info / warn / error
+log.level = "info"
+# 日志文件保留天数
+log.maxDays = 7
+# 禁用标准输出中的日志颜色
+log.disablePrintColor = false
+
+# Dashboard 与监控配置
+# ----------------------------------------
+# 注意：此端口是 frpc 自身的 Admin UI，仅本地可访问（127.0.0.1）
+# 如需通过公网访问，请参考下方的 proxies 配置示例
+# webServer 监听地址
+webServer.addr = "127.0.0.1"
+# webServer 监听端口
+webServer.port = 7500
+# HTTP BasicAuth 用户名
+webServer.user = "vaciller_frpc"
+# HTTP BasicAuth 密码
+webServer.password = "19990830_frpc"
+# 静态资源目录, Dashboard 使用的资源默认打包在二进制文件中, 通过指定此参数使用自定义的静态资源
+# webServer.assetsDir = ""
+# 启动 Go HTTP pprof, 用于应用调试
+webServer.pprofEnable = false
+# TLS 证书文件路径
+# webServer.tls.certFile = ""
+# TLS 密钥文件路径
+# webServer.tls.keyFile = ""
+# CA 证书文件路径
+# webServer.tls.trustedCaFile = ""
+# TLS Server 名称
+# webServer.tls.serverName = ""
+
+# 网络传输层配置
+# ----------------------------------------
+# 和 frps 之间的通信协议, tcp / kcp / quic / websocket / wss
+transport.protocol = "tcp"
+# 连接服务端的超时时间
+transport.dialServerTimeout = 10
+# 和服务端底层 TCP 连接的 keepalive 间隔时间
+transport.dialServerKeepalive = 7200
+# 连接服务端时所绑定的本地 IP（用于多网卡场景）
+# transport.connectServerLocalIP = ""
+# 连接服务端使用的代理地址, 格式为 {protocol}://user:passwd@192.168.1.128:8080, protocol 目前支持 http、socks5、ntlm
+# transport.proxyURL = ""
+# 连接池大小
+transport.poolCount = 0
+# TCP 多路复用
+transport.tcpMux = true
+# tcp_mux 的心跳检查间隔时间
+transport.tcpMuxKeepaliveInterval = 60
+# QUIC 协议配置参数
+transport.quic.keepalivePeriod = 10
+transport.quic.maxIdleTimeout = 30
+transport.quic.maxIncomingStreams = 100000
+# 向服务端发送心跳包的间隔时间, 建议启用 transport.tcpMuxKeepaliveInterval, 将此值设置为 -1
+transport.heartbeatInterval = -1
+# 和服务端心跳的超时时间
+transport.heartbeatTimeout = 90
+# 客户端 TLS 协议配置
+# 是否和服务端之间启用 TLS 连接
+transport.tls.enable = true
+# 启用 TLS 连接时, 不发送 0x17 特殊字节, 当配置为 true 时, 无法和 vhostHTTPSPort 端口复用
+transport.tls.disableCustomTLSFirstByte = true
+# TLS 证书文件路径
+# transport.tls.certFile = ""
+# TLS 密钥文件路径
+# transport.tls.keyFile = ""
+# CA 证书文件路径
+# transport.tls.trustedCaFile = ""
+# TLS Server 名称
+# transport.tls.serverName = ""
+
+# DNS 与 NAT 配置
+# ----------------------------------------
+# DNS 服务器地址, 默认使用系统配置的 DNS 服务器, 指定此参数可以强制替换为自定义的 DNS 服务器地址
+# dnsServer = ""
+# xtcp 打洞所需的 stun 服务器地址
+# natHoleStunServer = "stun.easyvoip.com:3478"
+
+# 客户端限制与资源控制
+# ----------------------------------------
+# 指定启用部分代理, 当配置了较多代理, 但是只希望启用其中部分时可以通过此参数指定
+# start = [""]
+# 特性门控，用于启用或禁用实验性功能
+# featureGates = map[string]string
+# 代理 UDP 服务时支持的最大包长度, 服务端和客户端的值需要一致
+udpPacketSize = 1500
+
+# 代理配置
+# ----------------------------------------
+# 要转发的项
+[[proxies]]
+# 代理名称, 必须全局唯一
+name = "FRPC_MAC_Mini_M4"
+# 代理类型, tcp / udp / http / https / stcp / sudp / xtcp / tcpmux
+type = "tcp"
+# 本地服务 IP 地址
+localIP = "127.0.0.1"
+# 本地服务端口
+localPort = 7500
+# 服务端监听端口
+remotePort = 7501
